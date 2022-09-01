@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import './screens/product_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './screens/cart_screen.dart';
+import './screens/order_screen.dart';
 import './providers/products_provider.dart';
 import './providers/cart.dart';
+import './providers/order.dart';
 
 void main() {
   runApp(const MyApp());
@@ -20,6 +22,7 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider(create: (ctx) => ProductsProvider()),
           Provider(create: (ctx) => Cart()),
+          Provider(create: (ctx) => Orders()),
         ],
         child: MaterialApp(
           title: 'EcomHub',
@@ -33,6 +36,7 @@ class MyApp extends StatelessWidget {
           routes: {
             ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
             CartScreen.routeName: (ctx) => const CartScreen(),
+            OrderScreen.routeName: (ctx) => const OrderScreen(),
           },
         ));
   }
