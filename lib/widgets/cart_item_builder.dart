@@ -43,6 +43,8 @@ class CartItemBuilder extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: ListTile(
             leading: CircleAvatar(
+              backgroundColor: Theme.of(context).colorScheme.secondary,
+              foregroundColor: Colors.black,
               child: Padding(
                 padding: const EdgeInsets.all(5),
                 child: FittedBox(child: Text('\$$price')),

@@ -5,7 +5,7 @@ class Badge extends StatelessWidget {
     Key? key,
     required this.child,
     required this.value,
-    this.color = Colors.lime,
+    this.color = const Color.fromARGB(255, 187, 255, 0),
   }) : super(key: key);
 
   final Widget child;
@@ -35,9 +35,7 @@ class Badge extends StatelessWidget {
             child: Text(
               value,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 10,
-              ),
+              style: const TextStyle(fontSize: 10, color: Colors.black),
             ),
           ),
         )

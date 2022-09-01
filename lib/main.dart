@@ -20,9 +20,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          Provider(create: (ctx) => ProductsProvider()),
-          Provider(create: (ctx) => Cart()),
-          Provider(create: (ctx) => Orders()),
+          ListenableProvider(create: (ctx) => ProductsProvider()),
+          ListenableProvider(create: (ctx) => Cart()),
+          ListenableProvider(create: (ctx) => Orders()),
         ],
         child: MaterialApp(
           title: 'EcomHub',
