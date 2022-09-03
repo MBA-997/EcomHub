@@ -20,9 +20,10 @@ class ProductOverviewScreen extends StatefulWidget {
 }
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
+  var showFavoriteOnly = false;
+
   @override
   Widget build(BuildContext context) {
-    var showFavoriteOnly = false;
     return Scaffold(
       appBar: AppBar(
         title: const Text('EcomHub'),
