@@ -6,6 +6,7 @@ import '../widgets/badge.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/products_grid.dart';
 import '../providers/cart.dart';
+import '../providers/products_provider.dart';
 
 enum FilterOptions {
   all,
@@ -20,7 +21,17 @@ class ProductOverviewScreen extends StatefulWidget {
 }
 
 class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
-  var showFavoriteOnly = false;
+  var _showFavoriteOnly = false;
+  var _isInit = true;
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      Provider.of<ProductsProvider>(context).fetchAndSetProducts();
+      _isInit = false;
+    }
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +43,9 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
               onSelected: (FilterOptions selectedValue) {
                 setState(() {
                   if (selectedValue == FilterOptions.favorites) {
-                    showFavoriteOnly = true;
+                    _showFavoriteOnly = true;
                   } else {
-                    showFavoriteOnly = false;
+                    _showFavoriteOnly = false;
                   }
                 });
               },
@@ -62,7 +73,7 @@ class _ProductOverviewScreenState extends State<ProductOverviewScreen> {
         ],
       ),
       drawer: const AppDrawer(),
-      body: ProductsGrid(showFavorites: showFavoriteOnly),
+      body: ProductsGrid(showFavorites: _showFavoriteOnly),
     );
   }
 }
