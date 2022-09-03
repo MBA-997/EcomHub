@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSwatch().copyWith(
                   primary: Colors.black,
                   secondary: const Color.fromARGB(255, 187, 255, 0))),
-          home: const ProductOverviewScreen(),
+          home: ProductOverviewScreen(),
           routes: {
             ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
             CartScreen.routeName: (ctx) => const CartScreen(),
