@@ -24,16 +24,6 @@ class UserProductScreen extends StatelessWidget {
                 Navigator.of(context).pushNamed(EditProductScreen.routeName);
               },
               icon: const Icon(Icons.add)),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(EditProductScreen.routeName);
-              },
-              icon: const Icon(Icons.edit)),
-          IconButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed(EditProductScreen.routeName);
-              },
-              icon: const Icon(Icons.delete))
         ],
       ),
       drawer: const AppDrawer(),
@@ -43,6 +33,7 @@ class UserProductScreen extends StatelessWidget {
           itemBuilder: (ctx, i) => Column(
             children: [
               UserProductItem(
+                id: productData.items[i].id,
                 title: productData.items[i].title,
                 imageUrl: productData.items[i].imageUrl,
               ),
