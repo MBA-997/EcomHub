@@ -5,10 +5,17 @@ import '../providers/cart.dart';
 import '../providers/order.dart';
 import '../widgets/cart_item_builder.dart';
 
-class CartScreen extends StatelessWidget {
+class CartScreen extends StatefulWidget {
   static const routeName = '/cart';
 
   const CartScreen({Key? key}) : super(key: key);
+
+  @override
+  State<CartScreen> createState() => _CartScreenState();
+}
+
+class _CartScreenState extends State<CartScreen> {
+  var _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -38,17 +45,30 @@ class CartScreen extends StatelessWidget {
                       backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     TextButton(
-                      onPressed: () {
-                        Provider.of<Orders>(context, listen: false).addOrder(
-                            cartData.items.values.toList(),
-                            cartData.totalAmount);
-                        cartData.clear();
-                      },
-                      child: Text(
-                        'Proceed to Order',
-                        style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary),
-                      ),
+                      onPressed: (cartData.totalAmount <= 0 || _isLoading)
+                          ? null
+                          : () async {
+                              setState(() {
+                                _isLoading = true;
+                              });
+                              Provider.of<Orders>(context, listen: false)
+                                  .addOrder(cartData.items.values.toList(),
+                                      cartData.totalAmount)
+                                  .then((_) {
+                                cartData.clear();
+
+                                setState(() {
+                                  _isLoading = false;
+                                });
+                              });
+                            },
+                      child: _isLoading
+                          ? const CircularProgressIndicator()
+                          : Text(
+                              'Proceed to Order',
+                              style: TextStyle(
+                                  color: Theme.of(context).colorScheme.primary),
+                            ),
                     )
                   ],
                 )),
