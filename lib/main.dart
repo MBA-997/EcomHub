@@ -11,6 +11,7 @@ import './screens/auth_screen.dart';
 import './providers/products_provider.dart';
 import './providers/cart.dart';
 import './providers/order.dart';
+import './providers/auth.dart';
 
 void main() {
   runApp(const MyApp());
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
+          ListenableProvider(create: (ctx) => Auth()),
           ListenableProvider(create: (ctx) => ProductsProvider()),
           ListenableProvider(create: (ctx) => Cart()),
           ListenableProvider(create: (ctx) => Orders()),
