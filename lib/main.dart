@@ -23,13 +23,25 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-        providers: [
-          ListenableProvider(create: (ctx) => Auth()),
-          ListenableProvider(create: (ctx) => ProductsProvider()),
-          ListenableProvider(create: (ctx) => Cart()),
-          ListenableProvider(create: (ctx) => Orders()),
-        ],
-        child: MaterialApp(
+      providers: [
+        ListenableProvider(create: (ctx) => Auth()),
+        ChangeNotifierProxyProvider<Auth, ProductsProvider>(
+            create: (ctx) => ProductsProvider(authToken: '', itemsData: []),
+            update: (ctx, auth, previousProducts) => ProductsProvider(
+                authToken: auth.token,
+                itemsData: previousProducts == null
+                    ? []
+                    : previousProducts.itemsData)),
+        ListenableProvider(create: (ctx) => Cart()),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          create: (ctx) => Orders(ordersData: [], authToken: ''),
+          update: (ctx, auth, prevOrders) => Orders(
+              ordersData: prevOrders == null ? [] : prevOrders.ordersData,
+              authToken: auth.token),
+        ),
+      ],
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
           title: 'EcomHub',
           theme: ThemeData(
               fontFamily: 'Lato',
@@ -37,7 +49,8 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSwatch().copyWith(
                   primary: Colors.black,
                   secondary: const Color.fromARGB(255, 187, 255, 0))),
-          home: const AuthScreen(),
+          home:
+              auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
           routes: {
             ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
             CartScreen.routeName: (ctx) => const CartScreen(),
@@ -45,6 +58,8 @@ class MyApp extends StatelessWidget {
             UserProductScreen.routeName: (ctx) => const UserProductScreen(),
             EditProductScreen.routeName: (ctx) => const EditProductScreen(),
           },
-        ));
+        ),
+      ),
+    );
   }
 }
