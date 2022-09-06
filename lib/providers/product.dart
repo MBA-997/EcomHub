@@ -22,13 +22,13 @@ class Product with ChangeNotifier {
       required this.imageUrl,
       this.isFavorite = false});
 
-  Future<void> toggleFavoriteStatus() async {
+  Future<void> toggleFavoriteStatus(String token) async {
     final oldStatus = isFavorite;
 
     isFavorite = !isFavorite;
     notifyListeners();
 
-    final url = Uri.https(API, '/products/$id');
+    final url = Uri.https(API, '/products/$id.json?auth=$token');
 
     return http
         .patch(

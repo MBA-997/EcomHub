@@ -9,22 +9,26 @@ import '../models/http_exception.dart';
 const API = 'ecomhub-a440c-default-rtdb.firebaseio.com';
 
 class ProductsProvider with ChangeNotifier {
-  List<Product> _items = [];
+  List<Product> itemsData = [];
+
+  final String authToken;
+
+  ProductsProvider({required this.authToken, required this.itemsData});
 
   List<Product> get items {
-    return [..._items];
+    return [...itemsData];
   }
 
   List<Product> get favoriteItems {
-    return _items.where((item) => item.isFavorite).toList();
+    return itemsData.where((item) => item.isFavorite).toList();
   }
 
   Product findById(String id) {
-    return _items.firstWhere((item) => item.id == id);
+    return itemsData.firstWhere((item) => item.id == id);
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(API, '/products.json');
+    final url = Uri.https(API, '/products.json?auth=$authToken');
 
     try {
       final response = await http.get(url);
@@ -42,7 +46,7 @@ class ProductsProvider with ChangeNotifier {
             isFavorite: prodData['isFavorite']));
       });
 
-      _items = loadedProducts;
+      itemsData = loadedProducts;
       notifyListeners();
     } catch (error) {
       throw error;
@@ -50,7 +54,7 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = Uri.https(API, '/products.json');
+    final url = Uri.https(API, '/products.json?auth=$authToken');
 
     try {
       final response = await http.post(url,
@@ -69,7 +73,7 @@ class ProductsProvider with ChangeNotifier {
           price: product.price,
           imageUrl: product.imageUrl);
 
-      _items.add(newProduct);
+      itemsData.add(newProduct);
 
       notifyListeners();
     } catch (error) {
@@ -78,10 +82,10 @@ class ProductsProvider with ChangeNotifier {
   }
 
   Future<void> updateProduct(String productId, Product newProduct) async {
-    final index = _items.indexWhere((prod) => prod.id == productId);
+    final index = itemsData.indexWhere((prod) => prod.id == productId);
 
     if (index >= 0) {
-      final url = Uri.https(API, '/products/$productId.json');
+      final url = Uri.https(API, '/products/$productId.json?auth=$authToken');
 
       await http.patch(url,
           body: json.encode({
@@ -90,18 +94,18 @@ class ProductsProvider with ChangeNotifier {
             'imageUrl': newProduct.imageUrl,
             'price': newProduct.price,
           }));
-      _items[index] = newProduct;
+      itemsData[index] = newProduct;
       notifyListeners();
     }
   }
 
   Future<void> deleteProduct(String productId) async {
-    final url = Uri.https(API, '/products/$productId.json');
+    final url = Uri.https(API, '/products/$productId.json?auth=$authToken');
     final existingProductIndex =
-        _items.indexWhere((prod) => prod.id == productId);
-    Product? existingProduct = _items[existingProductIndex];
+        itemsData.indexWhere((prod) => prod.id == productId);
+    Product? existingProduct = itemsData[existingProductIndex];
 
-    _items.removeWhere((prod) => prod.id == productId);
+    itemsData.removeWhere((prod) => prod.id == productId);
     notifyListeners();
 
     return http.delete(url).then((response) {
@@ -110,7 +114,7 @@ class ProductsProvider with ChangeNotifier {
       }
       existingProduct = null;
     }).catchError((error) {
-      _items.insert(existingProductIndex, existingProduct as Product);
+      itemsData.insert(existingProductIndex, existingProduct as Product);
       notifyListeners();
       throw error;
     });

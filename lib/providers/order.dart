@@ -22,14 +22,18 @@ class OrderItem {
 }
 
 class Orders with ChangeNotifier {
-  List<OrderItem> _orders = [];
+  List<OrderItem> ordersData = [];
+
+  final String authToken;
+
+  Orders({required this.ordersData, required this.authToken});
 
   List<OrderItem> get orders {
-    return [..._orders];
+    return [...ordersData];
   }
 
   Future<void> fetchAndSetOrders() async {
-    final url = Uri.https(API, '/orders.json');
+    final url = Uri.https(API, '/orders.json?auth=$authToken');
     final List<OrderItem> loadedOrders = [];
 
     http.get(url).then((response) {
@@ -58,13 +62,13 @@ class Orders with ChangeNotifier {
           ),
         );
       });
-      _orders = loadedOrders.reversed.toList();
+      ordersData = loadedOrders.reversed.toList();
       notifyListeners();
     });
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url = Uri.https(API, '/orders.json');
+    final url = Uri.https(API, '/orders.json?auth=$authToken');
     final timestamp = DateTime.now();
 
     return http
@@ -88,7 +92,7 @@ class Orders with ChangeNotifier {
         throw HttpException('Could not set Favorite.');
       }
 
-      _orders.insert(
+      ordersData.insert(
           0,
           OrderItem(
               id: json.decode(response.body)['name'],
