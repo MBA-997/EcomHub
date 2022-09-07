@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import './screens/splash-screen.dart';
 import './screens/product_overview_screen.dart';
 import './screens/product_detail_screen.dart';
 import './screens/cart_screen.dart';
@@ -26,18 +27,21 @@ class MyApp extends StatelessWidget {
       providers: [
         ListenableProvider(create: (ctx) => Auth()),
         ChangeNotifierProxyProvider<Auth, ProductsProvider>(
-            create: (ctx) => ProductsProvider(authToken: '', itemsData: []),
+            create: (ctx) =>
+                ProductsProvider(authToken: '', userId: '', itemsData: []),
             update: (ctx, auth, previousProducts) => ProductsProvider(
                 authToken: auth.token,
+                userId: auth.useId,
                 itemsData: previousProducts == null
                     ? []
                     : previousProducts.itemsData)),
         ListenableProvider(create: (ctx) => Cart()),
         ChangeNotifierProxyProvider<Auth, Orders>(
-          create: (ctx) => Orders(ordersData: [], authToken: ''),
+          create: (ctx) => Orders(ordersData: [], authToken: '', userId: ''),
           update: (ctx, auth, prevOrders) => Orders(
               ordersData: prevOrders == null ? [] : prevOrders.ordersData,
-              authToken: auth.token),
+              authToken: auth.token,
+              userId: auth.useId),
         ),
       ],
       child: Consumer<Auth>(
@@ -49,8 +53,15 @@ class MyApp extends StatelessWidget {
               colorScheme: ColorScheme.fromSwatch().copyWith(
                   primary: Colors.black,
                   secondary: const Color.fromARGB(255, 187, 255, 0))),
-          home:
-              auth.isAuth ? const ProductOverviewScreen() : const AuthScreen(),
+          home: auth.isAuth
+              ? const ProductOverviewScreen()
+              : FutureBuilder(
+                  future: auth.tryAutoLogin(),
+                  builder: (ctx, authResultSnapshot) =>
+                      authResultSnapshot.connectionState ==
+                              ConnectionState.waiting
+                          ? SplashScreen()
+                          : const AuthScreen()),
           routes: {
             ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
             CartScreen.routeName: (ctx) => const CartScreen(),
