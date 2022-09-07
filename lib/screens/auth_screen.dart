@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -60,7 +58,7 @@ class AuthScreen extends StatelessWidget {
                         ],
                       ),
                       child: Text(
-                        'MyShop',
+                        'Ecomhub',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.secondary,
                           fontSize: 50,
