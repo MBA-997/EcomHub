@@ -12,8 +12,10 @@ class ProductsProvider with ChangeNotifier {
   List<Product> itemsData = [];
 
   final String authToken;
+  final String userId;
 
-  ProductsProvider({required this.authToken, required this.itemsData});
+  ProductsProvider(
+      {required this.authToken, required this.userId, required this.itemsData});
 
   List<Product> get items {
     return [...itemsData];
@@ -27,8 +29,10 @@ class ProductsProvider with ChangeNotifier {
     return itemsData.firstWhere((item) => item.id == id);
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = Uri.https(API, '/products.json?auth=$authToken');
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    final filterString =
+        filterByUser ? '&orderBy="creatorId"&eualTo="$userId"' : '';
+    var url = Uri.https(API, '/products.json?auth=$authToken$filterString');
 
     try {
       final response = await http.get(url);
@@ -36,6 +40,11 @@ class ProductsProvider with ChangeNotifier {
       final List<Product> loadedProducts = [];
 
       if (extractedData == null) return;
+
+      url = Uri.https(API, '/userFavorites/$userId.json?auth=$authToken');
+      final favoriteResponse = await http.get(url);
+      final favoriteData = json.decode(favoriteResponse.body);
+
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product(
             id: prodId,
@@ -43,7 +52,8 @@ class ProductsProvider with ChangeNotifier {
             description: prodData['description'],
             price: prodData['price'],
             imageUrl: prodData['imageUrl'],
-            isFavorite: prodData['isFavorite']));
+            isFavorite:
+                favoriteData == null ? false : favoriteData[prodId] ?? false));
       });
 
       itemsData = loadedProducts;
@@ -63,7 +73,6 @@ class ProductsProvider with ChangeNotifier {
             'price': product.price,
             'description': product.description,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite,
           }));
 
       final newProduct = Product(
