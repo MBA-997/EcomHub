@@ -25,8 +25,12 @@ class Orders with ChangeNotifier {
   List<OrderItem> ordersData = [];
 
   final String authToken;
+  final String userId;
 
-  Orders({required this.ordersData, required this.authToken});
+  Orders(
+      {required this.ordersData,
+      required this.authToken,
+      required this.userId});
 
   List<OrderItem> get orders {
     return [...ordersData];
