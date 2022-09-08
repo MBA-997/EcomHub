@@ -11,8 +11,13 @@ class CustomRoute extends MaterialPageRoute {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    // TODO: implement buildTransitions
-    return super
-        .buildTransitions(context, animation, secondaryAnimation, child);
+    if (settings.name == '/') {
+      return child;
+    }
+
+    return FadeTransition(
+      opacity: animation,
+      child: child,
+    );
   }
 }
