@@ -7,10 +7,6 @@ import '../providers/cart.dart';
 import '../providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
-  // final String id;
-  // final String title;
-  // final String imageUrl;
-
   const ProductItem({Key? key}) : super(key: key);
 
   @override
@@ -60,11 +56,19 @@ class ProductItem extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondary),
         ),
         child: GestureDetector(
-            onTap: () {
-              Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
-                  arguments: product.id);
-            },
-            child: Image.network(product.imageUrl, fit: BoxFit.cover)),
+          onTap: () {
+            Navigator.of(context).pushNamed(ProductDetailScreen.routeName,
+                arguments: product.id);
+          },
+          child: Hero(
+            tag: product.id,
+            child: FadeInImage(
+                placeholder:
+                    const AssetImage('assets/images/product-placeholder.png'),
+                image: NetworkImage(product.imageUrl),
+                fit: BoxFit.cover),
+          ),
+        ),
       ),
     );
   }
